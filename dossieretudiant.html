@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<!-- Inclusion de header.template  - debut -->
+<html lang="en">
+<head>
+<title>Dossier &eacute;tudiant - Polytechnique Montr&eacute;al</title>
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" >
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+<!-- Basic Page Needs
+  ================================================== -->
+<meta name="description" content="">
+<meta name="author" content="">
+<!-- Mobile Specific Metas
+  ================================================== -->
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<!-- CSS
+  ================================================== -->
+<link rel="stylesheet" href="stylesheets/base.css">
+<link rel="stylesheet" href="stylesheets/skeleton.css">
+<link rel="stylesheet" href="stylesheets/layout.css">
+<link rel="stylesheet" href="stylesheets/de_base.css">
+<link rel="stylesheet" href="stylesheets/jquery-ui.min.css">
+<!--[if lt IE 9]>
+		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+<!-- Favicons
+	================================================== -->
+<link rel="shortcut icon" href="images/favicon.ico">
+<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+<link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+<script language="javascript" type="text/javascript" src="script/utilitaires.js"></script>
+<script language="javascript" type="text/javascript" src="script/ValidationServlet.js"></script>
+<script language="javascript" type="text/javascript" src="script/jquery-3.1.1.min.js"></script>
+<script language="javascript" type="text/javascript" src="script/jquery-ui.min.js"></script>
+<script language="javascript" type="text/javascript" src="script/jquery.blockUI.js"></script>
+<script language="javascript" type="text/javascript" src="script/popupAuth.js"></script>
+<script language="javascript" type="text/javascript" src="script/setListAjax.js"></script>
+<script language="javascript" type="text/javascript" src="script/horaireTrimAjax.js"></script>
+<style type="text/css">
+select {
+	padding-top:6px;
+	padding-bottom:4px;
+	width:100%;
+}
+.avertissement {font-weight:bold}
+.erreur { color:#F00; font-weight:bold}
+input:disabled, select:disabled {
+	background-color:#E6E6E6!important;
+	color:#CCC;
+}
+@media only screen and (max-width: 767px) {
+	select {
+		width:85%;
+	}	
+}
+
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: #fefefe;
+  color:red;
+  margin: auto;
+  padding: 20px;
+  border: 10px solid #aa1919;
+  border-radius: 5px;
+  width: 40%;
+  animation-name: animatetop;
+  animation-duration: 0.9s
+}
+
+/* Add Animation */
+@keyframes animatetop {
+  from {top: -300px; opacity: 0}
+  to {top: 0; opacity: 1}
+}
+
+/* The Close Button */
+.close {
+  color: #aaaaaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+</style>
+<!-- Inclusion de header_sub.template  - debut -->
+</head>
+<body onLoad="initialiser();">
+<div id="bordureEntete"></div>
+<div id="wrapper">
+  <div id="filetEntete"></div>
+  <div class="container">
+    <div class="sixteen columns" id="headerDiv"> 
+    	<img src="images/PolyGaucheLogo.png" alt="Logo Polytechnique Montr&eacute;al" id="logoPolyEntete"/>
+		<h1 class="titreEntete">DOSSIER &Eacute;TUDIANT</h1>
+    </div>
+<!-- Inclusion de header_sub.template  - fin -->
+    <div class="row" title="">
+      <div class="sixteen columns"> 
+        <span class="lienEntete">
+        	[<a href="https://www.polymtl.ca/aide-dossier-etudiant/" target="_blank">AIDE</a>]&nbsp;
+        	[<a href="/WebEtudiant7/SortieServlet" >D&eacute;connexion</a>]</span>
+        <h2 class="titre">S&eacute;lectionner une option</h2>
+      </div>
+    </div>
+    
+	<div id="myModal" class="modal">
+  		<!-- Modal content -->
+  		<div class="modal-content">
+    		<span class="close" onclick="closeModal()" ><button id="closeBtn">OK</button></span>
+    		  <div id="mess"></div>
+  		</div>
+	</div>
+    
+    <div id="loginForm" style="display:none; cursor: default">
+        <h1>Mot de passe requis.</h1> 
+        <input type="password" id="valpwd" value="" /> 
+        <input type="button" id="btncontinue" value="Continuer" />&nbsp;&nbsp; 
+        <input type="button" id="btnclose" value="Annuler" />
+        <div id="msgLoginDossFin" style="color:red;padding:10px;"></div> 
+    </div> 
+  
+  <form method="post" action="" id="frmChoix">
+  <div class="row">
+    <div class="sixteen columns">   <!-- Affichage des différents messages à afficher --> 
+        <!-- Message qui indique si l'étudiant est Hors Faculté --> 
+      <p class="erreur">Vous devez compl&eacute;ter votre adresse permanente et les informations sur le contact d'urgence dans la section RENSEIGNEMENTS PERSONNELS avant de pouvoir utiliser les autres fonctions de votre dossier &eacute;tudiant. <br/></p><p class="erreur">Certaines fonctions de votre dossier en ligne sont bloqu&eacute;es, parce que : <br/>&nbsp;&nbsp;- Votre CAQ et/ou permis d'&eacute;tude est manquant ou invalide. <br/></p> <!-- Message provenant de la table raison blocage pour l'accès au bouton inscription --> 
+        <!-- Affiche le statut étudiant dans le cas où le bouton d'inscription est absent (hors période d'inscription)--> 
+    </div>
+  </div>
+  
+  
+  
+  
+  <div class="row tableEffect">
+    <div class="six columns">
+      <input type="button" name="btnRensPers" onclick="onClickRensPers(this.form)" value="Renseignements personnels" class="fullLenghtButton" />
+    </div>
+    <div class="six columns"></div>
+    <div class="four columns"></div>
+  </div>
+  
+   
+  
+  <div class="row tableEffect"> <div class="six columns"> <input type="button" class="fullLenghtButton" name="btnBulCumul" onClick="onClickBulCumul(this.form)" disabled="disabled"  value="Bulletin cumulatif / notes du trimestre courant "> </div> <div class="six columns"> <select name="selProgBulletinCumulatif" disabled="disabled" onChange="onChangeProgBulletinCumulatif(this.form)"> <option value="01">Baccalauréat en ingénierie - Génie informatique</option></select> </div><div class="four columns"></div></div> 
+  
+  
+  
+  <div class="row tableEffect"> <div class="six columns"> <input type="button" class="fullLenghtButton" name="btnHorPers" id="btnHorPers" onClick="onClickHorPers(this.form)" disabled="disabled"  value="Horaire personnel"> </div> <div class="six columns"> <select id="selProgHorPers" name="selProgHorPers" disabled="disabled"  > <option value="01">Baccalauréat en ingénierie - Génie informatique</option></select> </div> <div class="four columns"> <select id="selTrimHorPers" name="selTrimHorPers" disabled="disabled" onChange="onChangeTrimHorPers(this.form)"> <option value="20221">hiver 2022</option><option value="20213">automne 2021</option></select></div></div> <input type="hidden" name="numDossierHoraire" id="numDossierHoraire" value="01"> <input type="hidden" name="trimHoraire" id="trimHoraire" value="20221"> 
+  
+  
+  
+  <div class="row tableEffect"> <div class="six columns"> <input type="button" class="fullLenghtButton" name="btnModif" onClick="onClickModif(this.form)" disabled="disabled"  value="Modifications de choix de cours -  &#233;t&#233; 2023"> </div> <div class="six columns"> <select name="selProgModif" disabled="disabled" onChange="onChangeProgModif(this.form)"> </select> </div><div class="four columns"></div></div> 
+
+  
+
+  
+
+  
+  
+  
+  
+  <div class="row tableEffect"> <div class="six columns"> <input type="button" class="fullLenghtButton" id="btnAttScolaire" name="btnAttScolaire" onClick="onClickAttestionScolaire(this.form)" disabled="disabled"  value="Attestation de fr&eacute;quentation scolaire"> </div> <div class="six columns"><select id="selProgAttestation" name="selProgAttestation" disabled="disabled" /><option selected="selected" value="">Programme</option><option value="01">Baccalauréat en ingénierie - Génie informatique</option></select> </div><div class="four columns"> <select id="selTrimestreAttestation" name="selTrimestreAttestation" onchange="onChangeTrimAttestation(this.form)" disabled="disabled" > <option value="" /></select></div><div class="four columns"></div></div> 
+  
+  <div class="row tableEffect"> <div class="six columns"> <input type="button" class="fullLenghtButton" name="btnDossierFinancier" id="btnDossierFinancier"   value="Dossier financier"> </div> <div class="six columns"> </div><div class="four columns"></div></div> 
+  
+  
+  
+  <div class="sixteen columns">
+    <input type="hidden" name="stProgRensPers" value="">
+    <input type="hidden" name="stProgResAcad" value="">
+    <input type="hidden" name="stProgHorPers" value="">
+    <input type="hidden" name="stTrimHorPers" value="">
+    <input type="hidden" name="stProgPropo" value="">
+    <input type="hidden" name="stProgModif" value="">
+    <input type="hidden" name="stProgStage" value="">
+    <input type="hidden" name="stProgPlan" value="">
+    <input type="hidden" name="token" value="">
+    <input type="hidden" name="matricule" value="1925201">
+    <input type="hidden" name="choixProgramme" value="">
+    <input type="hidden" name="dateDebutTrimestre" value="">
+    <input type="hidden" name="choixProgrammeDates" value="">
+    <input type="hidden" name="codeDossier" value="01">
+    <input type="hidden" name="dateFinTrimestre" value=" ">
+    <input type="hidden" name="trimestreActuel" value=" ">
+    <input type="hidden" name="choixTrimestre" value=" ">
+    <input type="hidden" name="messagePasOK" value=" ">
+    <input type="hidden" name="trimestreModif" value="20232">
+    <input type="hidden" name="trimestreProp" value="20233">
+    <input type="hidden" name="anneeCollation" value="">
+    <input type="hidden" name="codeProgrammesBulletin" value="01">
+    <input type="hidden" name="codeProgrammesNotes" value="">
+    <input type="hidden" name="codeProgrammesHoraire" value="01">
+    <input type="hidden" name="codeProgrammeInsc" value="">
+    <input type="hidden" name="trimestre" value="20221">
+    <input type="hidden" name="codeProgrammesProposition" value="">
+    <input type="hidden" name="codeProgrammesPlan" value="">
+    <input type="hidden" name="codeProgrammesModification" value="">
+    <input type="hidden" name="nbreDoss" value="1">
+    <input type="hidden" name="nbreDossES" value="0">
+    <input type="hidden" name="nbreDossStage" value="">
+    <input type="hidden" name="nbreDossActif" value="1">
+    <input type="hidden" name="nbreTrim" value="5">
+    <input type="hidden" name="trimestreAttestation" value="">
+    <input type='hidden' name="dateRelAnt" value="Choisir">
+    <input type='hidden' name="trimestreInscription" value="20232">
+    <input type='hidden' name="codeStatutActuel" value="NINS">
+    <input type='hidden' name="chaineTrimInsc" value="été 2023">
+    <input type='hidden' name="chaineTrimModifChoixCours" value="été 2023">
+    <input type='hidden' name="nbInscRecherche" value="0">
+    <input type="hidden" name="selectionMandat" value=" ">
+    <input type="hidden" name="selectionMandat1" value=" ">
+    <input type="hidden" name="selectionMandat2" value=" ">
+    <input type="hidden" name="selectionMandat3" value=" ">
+    <input type="hidden" name="selectionMandat4" value=" ">
+    <input type="hidden" name="selectionMandat5" value=" ">
+    <input type="hidden" name="selectionMandat6" value=" ">
+    <input type="hidden" name="selectionMandat7" value=" ">
+    <input type="hidden" name="selectionMandat8" value=" ">
+    <input type="hidden" name="selectionMandat9" value=" ">
+    <input type="hidden" name="selectionMandat10" value=" ">
+    <input type="hidden" name="messagePopup" value="">
+    <input type="hidden" name="conflits10" value="">
+    <input type="hidden" name="conflits11" value="">
+    <input type="hidden" name="conflits12" value="">
+    <input type="hidden" name="conflits13" value="">
+    <input type="hidden" name="conflits14" value="">
+    <input type="hidden" name="conflits15" value="">
+    <input type="hidden" name="conflits16" value="">
+    <input type="hidden" name="conflits17" value="">
+    <input type="hidden" name="conflits18" value="">
+    <input type="hidden" name="conflits19" value="">
+    <input type="hidden" name="conflits20" value="">
+    <input type="hidden" name="conflits21" value="">
+    <input type="hidden" name="conflits22" value="">
+    <input type="hidden" name="conflits23" value="">
+    <input type="hidden" name="conflits24" value="">
+    <input type="hidden" name="conflits25" value="">
+    <input type="hidden" name="conflits26" value="">
+    <input type="hidden" name="conflits27" value="">
+    <input type="hidden" name="conflits28" value="">
+    <input type="hidden" name="conflits29" value="">
+    <input type="hidden" name="conflits30" value="">
+    <input type="hidden" name="conflits31" value="">
+    <input type="hidden" name="conflits32" value="">
+    <input type="hidden" name="conflits33" value="">
+    <input type="hidden" name="conflits34" value="">
+    <input type="hidden" name="conflits35" value="">
+    <input type="hidden" name="conflits36" value="">
+    <input type="hidden" name="conflits37" value="">
+    <input type="hidden" name="conflits38" value="">
+    <input type="hidden" name="conflits39" value="">
+    <input type="hidden" name="conflits40" value="">
+    <input type="hidden" name="conflits41" value="">
+    <input type="hidden" name="conflits42" value="">
+    <input type="hidden" name="conflits43" value="">
+    <input type="hidden" name="conflits44" value="">
+    <input type="hidden" name="conflits45" value="">
+    <input type="hidden" name="conflits46" value="">
+    <input type="hidden" name="conflits47" value="">
+    <input type="hidden" name="conflits48" value="">
+    <input type="hidden" name="conflits49" value="">
+    <input type="hidden" name="conflits50" value="">
+    <input type="hidden" name="conflits51" value="">
+    <input type="hidden" name="conflits52" value="">
+    <input type="hidden" name="conflits53" value="">
+    <input type="hidden" name="conflits54" value="">
+    <input type="hidden" name="conflits55" value="">
+    <input type="hidden" name="conflits56" value="">
+    <input type="hidden" name="conflits57" value="">
+    <input type="hidden" name="conflits58" value="">
+    <input type="hidden" name="conflits59" value="">
+    <input type="hidden" name="conflits60" value="">
+    <input type="hidden" name="conflits61" value="">
+    <input type="hidden" name="conflits62" value="">
+    <input type="hidden" name="conflits63" value="">
+    <input type="hidden" name="conflits64" value="">
+    <input type="hidden" name="conflits65" value="">
+    <input type="hidden" name="conflits66" value="">
+    <input type="hidden" name="conflits67" value="">
+    <input type="hidden" name="conflits68" value="">
+    <input type="hidden" name="conflits69" value="">
+    <input type="hidden" name="conflits70" value="">
+    <input type="hidden" name="conflits71" value="">
+    <input type="hidden" name="conflits72" value="">
+    <input type="hidden" name="conflits73" value="">
+    <input type="hidden" name="conflits74" value="">
+    <input type="hidden" name="conflits75" value="">
+    <input type="hidden" name="conflits76" value="">
+    <input type="hidden" name="conflits77" value="">
+    <input type="hidden" name="conflits78" value="">
+    <input type="hidden" name="conflits79" value="">
+    <input type="hidden" name="conflits80" value="">
+    <input type="hidden" name="conflits81" value="">
+    <input type="hidden" name="conflits82" value="">
+    <input type="hidden" name="conflits83" value="">
+    <input type="hidden" name="conflits84" value="">
+    <input type="hidden" name="conflits85" value="">
+    <input type="hidden" name="conflits86" value="">
+    <input type="hidden" name="conflits87" value="">
+    <input type="hidden" name="conflits88" value="">
+    <input type="hidden" name="conflits89" value="">
+    <input type="hidden" name="conflits90" value="">
+    <input type="hidden" name="conflits91" value="">
+    <input type="hidden" name="conflits92" value="">
+    <input type="hidden" name="conflits93" value="">
+    <input type="hidden" name="conflits94" value="">
+    <input type="hidden" name="conflits95" value="">
+    <input type="hidden" name="conflits96" value="">
+    <input type="hidden" name="conflits97" value="">
+    <input type="hidden" name="conflits98" value="">
+    <input type="hidden" name="conflits99" value="">
+    <input type="hidden" name="conflits00" value="">
+    <input type="hidden" name="conflits01" value="">
+    <input type="hidden" name="conflits02" value="">
+    <input type="hidden" name="conflits03" value="">
+    <input type="hidden" name="conflits04" value="">
+    <input type="hidden" name="conflits05" value="">
+    <input type="hidden" name="conflits06" value="">
+    <input type="hidden" name="conflits07" value="">
+    <input type="hidden" name="conflits08" value="">
+    <input type="hidden" name="conflits09" value="">
+  </div>
+  
+  <script>
+    
+    
+    function onChangeProgInscrit(form)
+{
+	var i = form.selProgInscrit.options.selectedIndex;
+	var num = form.selProgInscrit[i].value;
+	form.codeProgrammeInsc.value = num;
+	
+	document.getElementById("dispStatusDesc").innerHTML = inscStatusConst[inscNumDossConst.indexOf(num)];
+}
+	
+  	function closeModal() {
+  		modal.style.display = "none";
+  		document.getElementById("messagePopup").value = "";
+  	}
+  	
+	// Get the modal
+	var modal = document.getElementById("myModal");
+
+	// Get the button that opens the modal
+	var btn = document.getElementById("myBtn");
+
+	// Get the <span> element that closes the modal
+	var span = document.getElementsByClassName("close")[0];
+
+	// When the user clicks the button, open the modal 
+	btn.onclick = function() {
+  		modal.style.display = "block";
+	}
+
+	// When the user clicks on <span> (x), close the modal
+	span.onclick = function() {
+  		modal.style.display = "none";
+	}
+
+	// When the user clicks anywhere outside of the modal, close it
+	window.onclick = function(event) {
+  		if (event.target == modal) {
+    		modal.style.display = "none";
+  		}
+	}
+</script>
+</form>
+<!-- Inclusion de footer.template  - debut -->
+  </div>
+  <div id="filetPiedDePage"></div>
+</div>
+</body>
+<!-- Inclusion de footer.template  - fin -->
+</html>
